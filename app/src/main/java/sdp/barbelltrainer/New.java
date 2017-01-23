@@ -30,7 +30,7 @@ public class New extends AppCompatActivity {
         linechart.setDrawGridBackground(true);
         linechart.setBackgroundColor(Color.LTGRAY);
 
-        //----------------------------------------------
+        //Experimental LineChart-----------------------------------
 
         ArrayList<String> al_xaxis = new ArrayList<>();
         ArrayList<Entry> y_value = new ArrayList<>();

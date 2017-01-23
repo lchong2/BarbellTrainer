@@ -14,6 +14,7 @@ import com.github.mikephil.charting.charts.LineChart;
 public class MainActivity extends AppCompatActivity {
 
     private Button new_button;
+    private Button log_button;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,6 +32,18 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(i);
             }
         });
+
+        // Listener for "Log" button
+        log_button = (Button)findViewById(R.id.log_button);
+        log_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Start New.java
+                Intent i = new Intent(MainActivity.this, New.class);
+                startActivity(i);
+            }
+        });
+
 
     }
 }

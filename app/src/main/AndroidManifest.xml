@@ -15,7 +15,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".New"></activity>
+        <activity android:name=".New" />
+        <activity android:name=".LogActivity"></activity>
     </application>
 
 </manifest>
