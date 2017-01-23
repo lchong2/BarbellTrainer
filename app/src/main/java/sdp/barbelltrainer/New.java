@@ -49,7 +49,7 @@ public class New extends AppCompatActivity {
         Set.add(lds1);
 
         linechart.setData(new LineData(al_xaxis, Set));
-        linechart.setVisibleXRangeMinimum(0);
+
 
     }
 }
