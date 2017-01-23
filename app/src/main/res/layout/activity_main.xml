@@ -10,8 +10,33 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="sdp.barbelltrainer.MainActivity">
 
-    <TextView
+
+    <Button
+        android:text="@string/new_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Hello World!" />
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="65dp"
+        android:id="@+id/new_button" />
+
+    <Button
+        android:text="@string/log_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/new_button"
+        android:layout_alignLeft="@+id/new_button"
+        android:layout_alignStart="@+id/new_button"
+        android:layout_marginTop="65dp"
+        android:id="@+id/log_button" />
+
+    <Button
+        android:text="@string/help_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/log_button"
+        android:layout_alignLeft="@+id/log_button"
+        android:layout_alignStart="@+id/log_button"
+        android:layout_marginTop="65dp"
+        android:id="@+id/Help_Button" />
 </RelativeLayout>
