@@ -6,6 +6,7 @@ import android.os.Bundle;
 
 // New import files
 import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
@@ -15,6 +16,8 @@ import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import android.graphics.Color;
 
 import java.util.ArrayList;
+
+import static com.github.mikephil.charting.components.XAxis.XAxisPosition.BOTH_SIDED;
 //-----------------
 
 public class New extends AppCompatActivity {
@@ -38,7 +41,7 @@ public class New extends AppCompatActivity {
 
         for(int i=0; x<1.0;x+=0.01,i++) {
             al_xaxis.add(0, String.valueOf(x));
-            y_value.add(new Entry(i,0));
+            y_value.add(new Entry(0, i));
         }
 
         ArrayList<ILineDataSet> Set = new ArrayList<>();
