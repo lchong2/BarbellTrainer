@@ -31,7 +31,7 @@ import static com.github.mikephil.charting.components.XAxis.XAxisPosition.BOTH_S
 public class NewActivity extends AppCompatActivity {
 
     static ExecutorService threadpool = Executors.newFixedThreadPool(2);
-int i = 0; int j = 0;
+    static int i = 0;
     private Button start_new_button;
     static boolean recording;
     static LineChart linechart;
@@ -89,37 +89,31 @@ int i = 0; int j = 0;
                     recording = true;
                     start_new_button.setText("Stop");
 
-                    //RecordThread new_record = new RecordThread();
-                    //Future<?> f = new FutureTask<Void>(new RecordThread(), null);
 
                     Future future = threadpool.submit(new Runnable() {
                         public void run() {
-                            linedataset.addEntry(new Entry(0.1f,11));
-                            linedata.notifyDataChanged();
-                            linechart.notifyDataSetChanged();
-                            linechart.invalidate();
-                            TextView me = new TextView(lola);
-                            me.setWidth(100);
-                            me.setHeight(500);
-                            me.setText("Hello World");
-                            setContentView(me);
+                            while (recording) {
+
+                                linedataset.addEntry(new Entry((float)Math.round(Math.random()*10), (int)Math.round(Math.random()*20)));
+                                /*
+                                for (float a = -10; a<10; a+=2) {
+                                    linedataset.addEntry(new Entry(a, 10+i));
+                                    linedata.notifyDataChanged();
+                                    linechart.notifyDataSetChanged();
+                                }
+                                */
+
+                                runOnUiThread(new Runnable() {
+                                    public void run() {
+                                        linechart.invalidate();
+                                    }
+                                });
+                            }
+
                         }
                     });
 
-                    while(!future.isDone()){
-                        linedataset.addEntry(new Entry(0.01f,10+j));
-                        linedata.notifyDataChanged();
-                        linechart.notifyDataSetChanged();
-                        linechart.invalidate();
-                        i+=0.01;
-                    }
 
-
-
-                    linedataset.addEntry(new Entry(0.1f,9));
-                    linedata.notifyDataChanged();
-                    linechart.notifyDataSetChanged();
-                    linechart.invalidate();
 
                 }
                 else{
