@@ -95,20 +95,9 @@ public class NewActivity extends AppCompatActivity {
                             while (recording) {
 
                                 linedataset.addEntry(new Entry((float)Math.round(Math.random()*10), (int)Math.round(Math.random()*20)));
-                                //linedata.notifyDataChanged();
                                 linechart.notifyDataSetChanged();
-                                //for (float a = -10; a<10;a+=2){
-                                    //linedataset.addEntry(new Entry(a, 10));
-                                    //linedata.notifyDataChanged();
-                                    //linechart.notifyDataSetChanged();
-                                //}
-                                /*
-                                for (float a = -10; a<10; a+=2) {
-                                    linedataset.addEntry(new Entry(a, 10+i));
-                                    linedata.notifyDataChanged();
-                                    linechart.notifyDataSetChanged();
-                                }
-                                */
+
+
 
                                 runOnUiThread(new Runnable() {
                                     public void run() {
