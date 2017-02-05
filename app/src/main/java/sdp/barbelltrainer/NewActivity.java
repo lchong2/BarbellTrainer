@@ -26,6 +26,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.FutureTask;
 
 import static com.github.mikephil.charting.components.XAxis.XAxisPosition.BOTH_SIDED;
+import static java.lang.Thread.sleep;
 
 
 public class NewActivity extends AppCompatActivity {
@@ -42,7 +43,7 @@ public class NewActivity extends AppCompatActivity {
     Context lola = this;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate (Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new2);
@@ -90,7 +91,7 @@ public class NewActivity extends AppCompatActivity {
                     start_new_button.setText("Stop");
 
 
-                    Future future = threadpool.submit(new Runnable() {
+                    Future future = threadpool.submit(new Runnable()  {
                         public void run() {
                             while (recording) {
 
@@ -104,6 +105,11 @@ public class NewActivity extends AppCompatActivity {
                                         linechart.invalidate();
                                     }
                                 });
+                                try {
+                                    Thread.sleep(10);
+                                }catch(InterruptedException e) {
+                                    System.out.println("got interrupted!");
+                                }
                             }
 
                         }
