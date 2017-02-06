@@ -17,7 +17,7 @@
         </activity>
         <activity android:name=".New" />
         <activity android:name=".LogActivity" />
-        <activity android:name=".NewActivity" />
+        <activity android:name=".NewActivity" android:screenOrientation="portrait"/>
     </application>
 
 </manifest>
