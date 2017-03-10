@@ -15,6 +15,7 @@ public class MainActivity extends AppCompatActivity {
 
     private Button new_button;
     private Button log_button;
+    private Button connect_button;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,6 +45,17 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        connect_button = (Button)findViewById(R.id.connect_button);
+        connect_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Start New.java
+                Intent i = new Intent(MainActivity.this, DeviceScanActivity.class);
+                startActivity(i);
+            }
+        });
+
 
     }
+
 }

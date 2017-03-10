@@ -3,6 +3,7 @@ package sdp.barbelltrainer;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -37,7 +38,10 @@ import static java.lang.Thread.sleep;
 public class NewActivity extends AppCompatActivity implements SensorEventListener {
 
     int cursor_x = 1000;
-    float cursor_y = 0;
+    float posy = 1000;
+    float posz = 0;
+    float velz = 0f;
+    double vely=0;
 
     private SensorManager sensorManager;
     private Sensor accel;
@@ -53,6 +57,15 @@ public class NewActivity extends AppCompatActivity implements SensorEventListene
     static ArrayList<Entry> entries;
     static LineDataSet linedataset;
     static LineData linedata;
+
+// Make sure we go back to the main menu
+    public void onBackPressed() {
+        Intent i = new Intent(this, MainActivity.class);
+        startActivity(i);
+        super.onBackPressed();
+
+    }
+
 // Accelerometer functions vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
     protected void onPause() {
         super.onPause();
@@ -97,7 +110,7 @@ public class NewActivity extends AppCompatActivity implements SensorEventListene
         float[] data = {0};
         entries = new ArrayList<Entry>();
 
-        entries.add(new Entry(cursor_y, cursor_x));
+        entries.add(new Entry(posz, (int)posy));
 
         //LineDataSet
         linedataset = new LineDataSet(entries, "bar path");
@@ -127,6 +140,9 @@ public class NewActivity extends AppCompatActivity implements SensorEventListene
 
         final TextView xtext = (TextView) findViewById(R.id.ax);
         final TextView ytext = (TextView) findViewById(R.id.ay);
+        final TextView ztext = (TextView) findViewById(R.id.az);
+        final TextView sensor_v = (TextView) findViewById(R.id.sv);
+
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         accel = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         sensorManager.registerListener(this, accel, SensorManager.SENSOR_DELAY_NORMAL);
@@ -146,21 +162,31 @@ public class NewActivity extends AppCompatActivity implements SensorEventListene
                     Future future = threadpool.submit(new Runnable()  {
                         public void run() {
                             while (recording) {
-                                cursor_x+=Math.round(ax);
-                                cursor_y+=ay/1000.0;
-                                linedataset.addEntry(new Entry(cursor_y,cursor_x));
+                                //cursor_x+=Math.round(ax);
+                                //cursor_y+=ay/1000.0;
+                                az -= 10;
+                                az /= 1000.0;
+                                velz = velz + (float)(az*1*(0.5)); //velocity of z
+                                posz = posz + (float)(velz*1); //position of z
+                                vely = vely + (ay*1*(0.5)); //velocity of y
+                                posy =  (float)(posy+ (vely*1)); //position of y
+                                linedataset.addEntry(new Entry((float)posz,(int)posy));
+                                System.out.println(posz + "-------------" +(int)posy);
                                 linechart.notifyDataSetChanged();
+
 
 
                                 runOnUiThread(new Runnable() {
                                     public void run() {
                                         linechart.invalidate();
                                         xtext.setText("x-value:" + Float.toString((Math.round(ax))));
-                                        ytext.setText("y-value:" + Float.toString((float)(ay/1000.0)));
+                                        ytext.setText("y-value:" + Float.toString((float)(ay)));
+                                        ztext.setText("z-value:" + Float.toString((float)(az)));
+                                        sensor_v.setText("sensor:" + DeviceControlActivity.sensor_value);
                                     }
                                 });
                                 try {
-                                    Thread.sleep(10);
+                                    Thread.sleep(1000);
                                 }catch(InterruptedException e) {
                                     System.out.println("got interrupted!");
                                 }

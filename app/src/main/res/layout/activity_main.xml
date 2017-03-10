@@ -12,15 +12,6 @@
 
 
     <Button
-        android:text="@string/new_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="65dp"
-        android:id="@+id/new_button" />
-
-    <Button
         android:text="@string/log_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -31,12 +22,29 @@
         android:id="@+id/log_button" />
 
     <Button
+        android:text="@string/connect_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignStart="@+id/Help_Button"
+        android:layout_below="@+id/Help_Button"
+        android:layout_marginTop="52dp"
+        android:id="@+id/connect_button" />
+
+    <Button
+        android:text="@string/new_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/new_button"
+        android:layout_marginTop="50dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true" />
+
+    <Button
         android:text="@string/help_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="53dp"
+        android:id="@+id/Help_Button"
         android:layout_below="@+id/log_button"
-        android:layout_alignLeft="@+id/log_button"
-        android:layout_alignStart="@+id/log_button"
-        android:layout_marginTop="65dp"
-        android:id="@+id/Help_Button" />
+        android:layout_alignStart="@+id/log_button" />
 </RelativeLayout>
