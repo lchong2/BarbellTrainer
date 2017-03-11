@@ -18,6 +18,7 @@ import android.util.Log;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.Arrays;
 
 //package com.example.android.bluetoothlegatt;
 
@@ -48,7 +49,10 @@ import java.util.UUID;
  */
 public class BluetoothLeService extends Service {
     private final static String TAG = BluetoothLeService.class.getSimpleName();
-
+    /*=================================Josselin Vergaray========================================*/
+    byte[] data = new byte[13];
+    float n_data_x, n_data_y, n_data_z;
+    /*==========================================================================================*/
     private BluetoothManager mBluetoothManager;
     private BluetoothAdapter mBluetoothAdapter;
     private String mBluetoothDeviceAddress;
@@ -327,7 +331,20 @@ public class BluetoothLeService extends Service {
 
         return mBluetoothGatt.getServices();
     }
-
+    /*=================================Josselin Vergaray========================================*/
+    public float parse_data(float d_1, float d_2){
+        float d;
+        if(d_1 == -1){
+            d = (d_2 * -1)/100;
+        }else if(d_1 < -1 ){
+            d = ((d_1 *100) - d_2)/100;
+        }
+        else{
+            d = ((d_1 *100) + d_2)/100;
+        }
+        return  d;
+    }
+    /*=========================================================================================*/
 
 
     public void readCustomCharacteristic() {
@@ -343,9 +360,28 @@ public class BluetoothLeService extends Service {
         }
         /*get the read characteristic from the service*/
         BluetoothGattCharacteristic mReadCharacteristic = mCustomService.getCharacteristic(UUID.fromString("00001207-0000-1000-8000-00805f9b34fb"));
+        /*=================================Josselin Vergaray========================================*/
+        //array that stores the data from the board
+        data = mReadCharacteristic.getValue();
+        //prints the entire byte array that is receiving from the board
+        Log.d("Data array: ", Arrays.toString(data));
+        /*=========================================================================================*/
         if(mBluetoothGatt.readCharacteristic(mReadCharacteristic) == false){
             Log.w(TAG, "Failed to read characteristic");
         }
+        /*=================================Josselin Vergaray========================================*/
+        if( data != null){
+            //index 0 and 1 are the split values of x
+            n_data_x = parse_data((float) data[0], (float)data[1]);
+            Log.d("Accelerometer X value: ", Float.toString(n_data_x));
+            //index 2 and 3 are the split values of y
+            n_data_y = parse_data((float) data[2], (float)data[3]);
+            Log.d("Accelerometer Y value: ", Float.toString(n_data_y));
+            //index 4 and 5 are the split values of z
+            n_data_z = parse_data((float)data[4], (float)data[5]);
+            Log.d("Accelerometer Z value: ", Float.toString(n_data_z));
+        }
+        /*=========================================================================================*/
     }
 
     public void writeCustomCharacteristic(int value) {
