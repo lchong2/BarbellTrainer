@@ -38,10 +38,10 @@ import static java.lang.Thread.sleep;
 public class NewActivity extends AppCompatActivity implements SensorEventListener {
 
     int cursor_x = 1000;
-    float posy = 1000;
-    float posz = 0;
-    float velz = 0f;
-    double vely=0;
+    float cursor_y = 0;
+
+    float vel_x = 0;
+    float vel_y = 0;
 
     private SensorManager sensorManager;
     private Sensor accel;
@@ -78,7 +78,7 @@ public class NewActivity extends AppCompatActivity implements SensorEventListene
     }
 
     public void onSensorChanged(SensorEvent event) {
-        if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
+        if (event.sensor.getType() == Sensor.TYPE_LINEAR_ACCELERATION) {
             ax = event.values[0];
             ay = event.values[1];
             az = event.values[2];
@@ -110,7 +110,7 @@ public class NewActivity extends AppCompatActivity implements SensorEventListene
         float[] data = {0};
         entries = new ArrayList<Entry>();
 
-        entries.add(new Entry(posz, (int)posy));
+        entries.add(new Entry(cursor_y, cursor_x));
 
         //LineDataSet
         linedataset = new LineDataSet(entries, "bar path");
@@ -144,7 +144,7 @@ public class NewActivity extends AppCompatActivity implements SensorEventListene
         final TextView sensor_v = (TextView) findViewById(R.id.sv);
 
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-        accel = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        accel = sensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
         sensorManager.registerListener(this, accel, SensorManager.SENSOR_DELAY_NORMAL);
 
     // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -162,16 +162,15 @@ public class NewActivity extends AppCompatActivity implements SensorEventListene
                     Future future = threadpool.submit(new Runnable()  {
                         public void run() {
                             while (recording) {
-                                //cursor_x+=Math.round(ax);
-                                //cursor_y+=ay/1000.0;
-                                az -= 10;
-                                az /= 1000.0;
-                                velz = velz + (float)(az*1*(0.5)); //velocity of z
-                                posz = posz + (float)(velz*1); //position of z
-                                vely = vely + (ay*1*(0.5)); //velocity of y
-                                posy =  (float)(posy+ (vely*1)); //position of y
-                                linedataset.addEntry(new Entry((float)posz,(int)posy));
-                                System.out.println(posz + "-------------" +(int)posy);
+                                vel_x = vel_x/3.0f + Math.round((Math.round(ax*10)/10.0));
+                                cursor_x = cursor_x + (int)vel_x;
+
+                                vel_y = vel_y/2.0f + Math.round((Math.round(ay*10)/10.0))/100.0f;
+                                cursor_y = cursor_y + vel_y/100.0f;
+
+                                //cursor_x+=Math.round(ax*10)/10.0;
+                                //cursor_y+=(Math.round(ay*10)/10.0)/1000.0;
+                                linedataset.addEntry(new Entry(cursor_y,cursor_x));
                                 linechart.notifyDataSetChanged();
 
 
@@ -179,14 +178,14 @@ public class NewActivity extends AppCompatActivity implements SensorEventListene
                                 runOnUiThread(new Runnable() {
                                     public void run() {
                                         linechart.invalidate();
-                                        xtext.setText("x-value:" + Float.toString((Math.round(ax))));
+                                        xtext.setText("x-value:" + Float.toString(ax));
                                         ytext.setText("y-value:" + Float.toString((float)(ay)));
                                         ztext.setText("z-value:" + Float.toString((float)(az)));
                                         sensor_v.setText("sensor:" + DeviceControlActivity.sensor_value);
                                     }
                                 });
                                 try {
-                                    Thread.sleep(1000);
+                                    Thread.sleep(10);
                                 }catch(InterruptedException e) {
                                     System.out.println("got interrupted!");
                                 }
