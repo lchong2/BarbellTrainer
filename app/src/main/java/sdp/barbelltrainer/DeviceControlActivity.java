@@ -17,6 +17,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ExpandableListView;
 import android.widget.SimpleExpandableListAdapter;
 import android.widget.TextView;
@@ -24,6 +25,9 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 /**
  * For a given BLE device, this Activity provides the user interface to connect, display data,
@@ -42,7 +46,7 @@ public class DeviceControlActivity extends AppCompatActivity {
     private String mDeviceName;
     private String mDeviceAddress;
     private ExpandableListView mGattServicesList;
-    private BluetoothLeService mBluetoothLeService;
+    public static BluetoothLeService mBluetoothLeService;
     private ArrayList<ArrayList<BluetoothGattCharacteristic>> mGattCharacteristics =
             new ArrayList<ArrayList<BluetoothGattCharacteristic>>();
     private boolean mConnected = false;
@@ -54,7 +58,7 @@ public class DeviceControlActivity extends AppCompatActivity {
     // Barbell trainer code by Lawrence
     // Keeps activity running after 'back' button is pressed, and redirects to make a new record
 
-    public static String sensor_value;
+   // public static String sensor_value;
     public void onBackPressed() {
         Intent i = new Intent(DeviceControlActivity.this, NewActivity.class);
         startActivity(i);
@@ -110,7 +114,7 @@ public class DeviceControlActivity extends AppCompatActivity {
             } else if (BluetoothLeService.ACTION_DATA_AVAILABLE.equals(action)) {
                 displayData(intent.getStringExtra(BluetoothLeService.EXTRA_DATA));
                 // Lawrence
-                sensor_value = intent.getStringExtra(BluetoothLeService.EXTRA_DATA);
+                //sensor_value = intent.getStringExtra(BluetoothLeService.EXTRA_DATA);
             }
         }
     };
@@ -324,9 +328,9 @@ public class DeviceControlActivity extends AppCompatActivity {
         }
     }
 
-    public void onClickRead(View v){
-        if(mBluetoothLeService != null) {
-            mBluetoothLeService.readCustomCharacteristic();
-        }
-    }
+//    public void onClickRead(View v){
+//        if(mBluetoothLeService != null) {
+//            mBluetoothLeService.readCustomCharacteristic();
+//        }
+//    }
 }

@@ -51,7 +51,7 @@ public class BluetoothLeService extends Service {
     private final static String TAG = BluetoothLeService.class.getSimpleName();
     /*=================================Josselin Vergaray========================================*/
     byte[] data = new byte[13];
-    float n_data_x, n_data_y, n_data_z;
+    public static float n_data_x, n_data_y, n_data_z;
     /*==========================================================================================*/
     private BluetoothManager mBluetoothManager;
     private BluetoothAdapter mBluetoothAdapter;

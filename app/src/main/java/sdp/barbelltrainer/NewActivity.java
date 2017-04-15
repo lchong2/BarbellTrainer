@@ -199,12 +199,15 @@ public class NewActivity extends AppCompatActivity implements SensorEventListene
                                 runOnUiThread(new Runnable() {
                                     public void run() {
                                         linechart.invalidate();
+                                        DeviceControlActivity.mBluetoothLeService.readCustomCharacteristic();
                                         xtext.setText("x-value:" + Float.toString(ax));
                                         ytext.setText("y-value:" + Float.toString((float)(ay)));
                                         ztext.setText("z-value:" + Float.toString((float)(az)));
                                         theta_v.setText("theta(real):" + Float.toString((float)(atan2(ax, ay*-1)*(180/Math.PI)+180)));
                                         theta_v2.setText("theta(est):" + theta);
-                                        sensor_v.setText("sensor:" + DeviceControlActivity.sensor_value);
+                                        //sensor_v.setText("sensor:" + DeviceControlActivity.sensor_value);
+                                        sensor_v.setText("Accel x:" + Float.toString(BluetoothLeService.n_data_x) + " Accel y:" + Float.toString(BluetoothLeService.n_data_y) + " Accel z:" + Float.toString(BluetoothLeService.n_data_z));
+                                        //sensor_v.setText("sensor y:" + Float.toString(BluetoothLeService.n_data_y));
                                     }
                                 });
                                 try {
