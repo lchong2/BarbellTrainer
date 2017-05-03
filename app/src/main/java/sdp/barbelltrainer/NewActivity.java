@@ -11,6 +11,12 @@ import android.hardware.SensorManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 // New import files
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.lang.Math;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.XAxis;
@@ -21,10 +27,13 @@ import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 
 import android.graphics.Color;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.os.Environment;
 
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -35,6 +44,7 @@ import java.util.concurrent.FutureTask;
 import static com.github.mikephil.charting.components.XAxis.XAxisPosition.BOTH_SIDED;
 import static java.lang.Math.atan2;
 import static java.lang.Thread.sleep;
+import java.io.OutputStreamWriter;
 
 
 public class NewActivity extends AppCompatActivity implements SensorEventListener {
@@ -62,6 +72,10 @@ public class NewActivity extends AppCompatActivity implements SensorEventListene
     static ArrayList<Entry> entries;
     static LineDataSet linedataset;
     static LineData linedata;
+
+
+    //Rohan
+    private static final String TAG = MainActivity.class.getName();
 
 // Make sure we go back to the main menu
     public void onBackPressed() {
@@ -100,6 +114,72 @@ public class NewActivity extends AppCompatActivity implements SensorEventListene
 
 
     }
+
+
+
+    // Rohan Jobanputra -  Trying to write to a file
+//    String path =
+//            Environment.getExternalStorageDirectory() + File.separator  + "yourFolder";
+//    // Create the folder.
+//    File folder = new File(path);
+//    folder.mkdirs();
+//
+//    // Create the file.
+//    File file = new File(folder, "config.txt");
+
+    String [] dataarray = new String[3];
+
+
+    public void writeToFile(String[] data)
+    {
+        // Get the directory for the user's public pictures directory.
+        final File path =
+                Environment.getExternalStoragePublicDirectory
+                        (
+                                //Environment.DIRECTORY_PICTURES
+                                Environment.DIRECTORY_DCIM + "/YourFolder/"
+                        );
+        boolean isDirectoryCreated= path.mkdir();
+
+        if (!isDirectoryCreated) {
+            isDirectoryCreated= path.mkdir();
+        }
+        // Make sure the path directory exists.
+//        if(!path.exists())
+//        {
+//            // Make it, if it doesn't exit
+//            //path.mkdirs();
+//        }
+
+        final File file = new File(path, "config.txt");
+
+        // Save your stream, don't forget to flush() it before closing it.
+
+        try
+        {
+            file.createNewFile();
+            //FileOutputStream fOut = new FileOutputStream(file,true);
+            FileWriter fOut = new FileWriter(file, true);
+            //OutputStreamWriter myOutWriter = new OutputStreamWriter(fOut);
+            PrintWriter myOutWriter = new PrintWriter(fOut);
+
+
+            for (int i=0; i<3; i++) {
+                myOutWriter.append(data[i]);
+            }
+
+            myOutWriter.close();
+
+            fOut.flush();
+            fOut.close();
+        }
+        catch (IOException e)
+        {
+            Log.e("Exception", "File write failed: " + e.toString());
+        }
+    }
+
+
 // ---------------------------------------------------------------------------
 
     @Override
@@ -175,6 +255,11 @@ public class NewActivity extends AppCompatActivity implements SensorEventListene
                     start_new_button.setText("Stop");
                     theta = (float)(atan2(ax, ay*-1)*(180/Math.PI)+180);
 
+                    //Rohan
+//                    File dir = getFilesDir();
+//                    File file = new File(dir, "config.txt");
+//                    file.delete();
+
                     Future future = threadpool.submit(new Runnable()  {
                         public void run() {
                             while (recording) {
@@ -208,6 +293,25 @@ public class NewActivity extends AppCompatActivity implements SensorEventListene
                                         //sensor_v.setText("sensor:" + DeviceControlActivity.sensor_value);
                                         sensor_v.setText("Accel x:" + Float.toString(BluetoothLeService.n_data_x) + " Accel y:" + Float.toString(BluetoothLeService.n_data_y) + " Accel z:" + Float.toString(BluetoothLeService.n_data_z));
                                         //sensor_v.setText("sensor y:" + Float.toString(BluetoothLeService.n_data_y));
+
+
+
+
+
+
+
+                                        // Rohan Jobanputra
+                                        // Trying to write to a file when the start button is pressed
+
+                                        dataarray[0] = "\nAccel x:" + Float.toString(BluetoothLeService.n_data_x);
+                                        dataarray[1] = " Accel y:" + Float.toString(BluetoothLeService.n_data_y);
+                                        dataarray[2] = " Accel z:" + Float.toString(BluetoothLeService.n_data_z);
+                                        writeToFile(dataarray);
+
+
+                                        //Save(Float.toString(BluetoothLeService.n_data_x));
+
+
                                     }
                                 });
                                 try {
@@ -222,11 +326,14 @@ public class NewActivity extends AppCompatActivity implements SensorEventListene
 
 
 
+
+
                 }
                 else{
                     recording = false;
                     start_new_button.setText("Start");
                 }
+
 
             }
         });
