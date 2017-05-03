@@ -263,10 +263,10 @@ public class NewActivity extends AppCompatActivity implements SensorEventListene
                     Future future = threadpool.submit(new Runnable()  {
                         public void run() {
                             while (recording) {
-                                vel_x = vel_x/3.0f + Math.round((Math.round(ax*10)/10.0));
+                                vel_x = vel_x/3.0f + Math.round((Math.round(BluetoothLeService.n_data_x*10)/10.0));
                                 cursor_x = cursor_x + (int)vel_x;
 
-                                vel_y = vel_y/2.0f + Math.round((Math.round(ay*10)/10.0))/100.0f;
+                                vel_y = vel_y/2.0f + Math.round((Math.round(BluetoothLeService.n_data_y*10)/10.0))/100.0f;
                                 cursor_y = cursor_y + vel_y/100.0f;
 
 
