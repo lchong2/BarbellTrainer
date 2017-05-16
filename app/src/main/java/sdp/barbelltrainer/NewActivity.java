@@ -73,6 +73,12 @@ public class NewActivity extends AppCompatActivity implements SensorEventListene
     static LineDataSet linedataset;
     static LineData linedata;
 
+    // Reps-------------------------------
+    int num_of_reps = 0;
+    ArrayList rep_data = new ArrayList();
+    String state = "steady";
+    //-------------------------------------
+
 
     //Rohan
     private static final String TAG = MainActivity.class.getName();
@@ -230,9 +236,10 @@ public class NewActivity extends AppCompatActivity implements SensorEventListene
 
     // Initializing accelerometer vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 
-        final TextView xtext = (TextView) findViewById(R.id.ax);
-        final TextView ytext = (TextView) findViewById(R.id.ay);
-        final TextView ztext = (TextView) findViewById(R.id.az);
+        //final TextView xtext = (TextView) findViewById(R.id.ax);
+        //final TextView ytext = (TextView) findViewById(R.id.ay);
+        //final TextView ztext = (TextView) findViewById(R.id.az);
+        final TextView reps = (TextView) findViewById(R.id.reps);
         final TextView sensor_v = (TextView) findViewById(R.id.sv);
         final TextView theta_v = (TextView) findViewById(R.id.tv);
         final TextView theta_v2 = (TextView) findViewById(R.id.tv2);
@@ -244,6 +251,7 @@ public class NewActivity extends AppCompatActivity implements SensorEventListene
 
     // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+
     // Start Button vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
         // Listener for "Start" button in NewActivity
         start_new_button = (Button)findViewById(R.id.start_new_button);
@@ -252,6 +260,9 @@ public class NewActivity extends AppCompatActivity implements SensorEventListene
             public void onClick(View v) {
                 if(start_new_button.getText().toString().compareTo("Start") == 0){
                     recording = true;
+                    num_of_reps = 0;
+                    rep_data.clear();
+
                     start_new_button.setText("Stop");
                     theta = (float)(atan2(ax, ay*-1)*(180/Math.PI)+180);
 
@@ -273,6 +284,37 @@ public class NewActivity extends AppCompatActivity implements SensorEventListene
 
                                 //cursor_x+=Math.round(ax*10)/10.0;
                                 //cursor_y+=(Math.round(ay*10)/10.0)/1000.0;
+
+                                double magnitude = Math.sqrt(ax*ax + ay*ay + az*az);
+                                if (rep_data.size() >= 20) {
+                                    rep_data.remove(0);
+                                }
+                                rep_data.add(magnitude);
+                                double average = 0;
+                                for (int i = 0; i < rep_data.size(); i++) {
+                                    average += (double)rep_data.get(i);
+                                }
+                                average /= rep_data.size();
+
+                                //num_of_reps = (int)average;
+
+                                if (average > 9 && average < 11) {
+                                    if (state.equals("going up")) {
+                                        num_of_reps += 1;
+                                        state = "steady";
+                                    }
+                                }
+                                else if (average < 9) {
+                                    if (state.equals("steady")) {
+                                        state = "going down";
+                                    }
+                                }
+                                else if (average > 11 ) {
+                                    if (state.equals("going down")) {
+                                        state = "going up";
+                                    }
+                                }
+
                                 linedataset.addEntry(new Entry(cursor_y,cursor_x));
                                 linechart.notifyDataSetChanged();
 
@@ -285,9 +327,7 @@ public class NewActivity extends AppCompatActivity implements SensorEventListene
                                     public void run() {
                                         linechart.invalidate();
                                         DeviceControlActivity.mBluetoothLeService.readCustomCharacteristic();
-                                        xtext.setText("x-value:" + Float.toString(ax));
-                                        ytext.setText("y-value:" + Float.toString((float)(ay)));
-                                        ztext.setText("z-value:" + Float.toString((float)(az)));
+                                        reps.setText("reps:" + num_of_reps);
                                         theta_v.setText("theta(real):" + Float.toString((float)(atan2(ax, ay*-1)*(180/Math.PI)+180)));
                                         theta_v2.setText("theta(est):" + theta);
                                         //sensor_v.setText("sensor:" + DeviceControlActivity.sensor_value);

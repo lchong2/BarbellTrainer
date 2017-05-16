@@ -64,28 +64,14 @@
                     android:id="@+id/tv2"/>
 
                 <TextView
-                    android:text="x-value:"
+                    android:text="reps:"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="24dp"
                     android:layout_marginLeft="24dp"
-                    android:id="@+id/ax"/>
+                    android:id="@+id/reps"/>
 
-                <TextView
-                    android:text="y-value:"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="24dp"
-                    android:layout_marginLeft="24dp"
-                    android:id="@+id/ay"/>
 
-                <TextView
-                    android:text="z-value:"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="24dp"
-                    android:layout_marginStart="24dp"
-                    android:id="@+id/az"/>
 
 
 
