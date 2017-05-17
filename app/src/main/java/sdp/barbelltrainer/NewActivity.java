@@ -1,5 +1,6 @@
 package sdp.barbelltrainer;
 
+import android.media.MediaPlayer;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -78,6 +79,8 @@ public class NewActivity extends AppCompatActivity implements SensorEventListene
     ArrayList rep_data = new ArrayList();
     String state = "steady";
     //-------------------------------------
+
+
 
 
     //Rohan
@@ -194,6 +197,10 @@ public class NewActivity extends AppCompatActivity implements SensorEventListene
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new2);
 
+        // Music-------------------------------
+        final MediaPlayer mp = MediaPlayer.create(this, R.raw.hey);
+        //---------------------------------------
+
     // LineChart vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
         // LineChart object
         linechart = (LineChart) findViewById((R.id.linechart));
@@ -262,7 +269,7 @@ public class NewActivity extends AppCompatActivity implements SensorEventListene
                     recording = true;
                     num_of_reps = 0;
                     rep_data.clear();
-
+                    mp.start();
                     start_new_button.setText("Stop");
                     theta = (float)(atan2(ax, ay*-1)*(180/Math.PI)+180);
 
@@ -370,6 +377,7 @@ public class NewActivity extends AppCompatActivity implements SensorEventListene
 
                 }
                 else{
+                    mp.stop();
                     recording = false;
                     start_new_button.setText("Start");
                 }
