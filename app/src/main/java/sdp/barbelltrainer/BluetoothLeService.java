@@ -51,7 +51,7 @@ public class BluetoothLeService extends Service {
     private final static String TAG = BluetoothLeService.class.getSimpleName();
     /*=================================Josselin Vergaray========================================*/
     byte[] data = new byte[13];
-    public static float n_data_x, n_data_y, n_data_z;
+    public static float n_data_x, n_data_y, n_data_z, n_data_gx, n_data_gy, n_data_gz;
     /*==========================================================================================*/
     private BluetoothManager mBluetoothManager;
     private BluetoothAdapter mBluetoothAdapter;
@@ -380,6 +380,15 @@ public class BluetoothLeService extends Service {
             //index 4 and 5 are the split values of z
             n_data_z = parse_data((float)data[4], (float)data[5]);
             Log.d("Accelerometer Z value: ", Float.toString(n_data_z));
+            //index 6 and 7 are the split values of gyro x
+            n_data_gx = parse_data((float)data[6], (float)data[7]);
+            Log.d("Accelerometer Z value: ", Float.toString(n_data_gx));
+            //index 8 and 9 are the split values of gyro y
+            n_data_gy = parse_data((float)data[8], (float)data[9]);
+            Log.d("Accelerometer Z value: ", Float.toString(n_data_gy));
+            //index 10 and 11 are the split values of gyro z
+            n_data_gz = parse_data((float)data[10], (float)data[11]);
+            Log.d("Accelerometer Z value: ", Float.toString(n_data_gz));
         }
         /*=========================================================================================*/
     }

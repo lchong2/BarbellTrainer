@@ -1,5 +1,6 @@
 package sdp.barbelltrainer;
 
+import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.app.Activity;
 import android.content.Context;
@@ -63,7 +64,7 @@ public class NewActivity extends AppCompatActivity implements SensorEventListene
     float ax, ay, az;
     float gx, gy, gz;
 
-    static ExecutorService threadpool = Executors.newFixedThreadPool(2);
+    static ExecutorService threadpool = Executors.newFixedThreadPool(4);
 
     private Button start_new_button;
     static boolean recording;
@@ -77,6 +78,10 @@ public class NewActivity extends AppCompatActivity implements SensorEventListene
     // Reps-------------------------------
     int num_of_reps = 0;
     ArrayList rep_data = new ArrayList();
+    ArrayList rep_accel_set = new ArrayList();
+    ArrayList rep_gyro_set = new ArrayList();
+    double max_delta = 0;
+    double max_gyro = 0;
     String state = "steady";
     //-------------------------------------
 
@@ -198,7 +203,10 @@ public class NewActivity extends AppCompatActivity implements SensorEventListene
         setContentView(R.layout.activity_new2);
 
         // Music-------------------------------
-        final MediaPlayer mp = MediaPlayer.create(this, R.raw.hey);
+        final MediaPlayer good_sound = MediaPlayer.create(this, R.raw.good);
+        final MediaPlayer bad_sound = MediaPlayer.create(this, R.raw.bad);
+        AudioManager audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+        audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, 20, 0);
         //---------------------------------------
 
     // LineChart vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
@@ -247,9 +255,10 @@ public class NewActivity extends AppCompatActivity implements SensorEventListene
         //final TextView ytext = (TextView) findViewById(R.id.ay);
         //final TextView ztext = (TextView) findViewById(R.id.az);
         final TextView reps = (TextView) findViewById(R.id.reps);
+        final TextView t_delta = (TextView) findViewById(R.id.delta);
         final TextView sensor_v = (TextView) findViewById(R.id.sv);
-        final TextView theta_v = (TextView) findViewById(R.id.tv);
-        final TextView theta_v2 = (TextView) findViewById(R.id.tv2);
+        //final TextView theta_v = (TextView) findViewById(R.id.tv);
+        //final TextView theta_v2 = (TextView) findViewById(R.id.tv2);
 
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         accel = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
@@ -269,7 +278,10 @@ public class NewActivity extends AppCompatActivity implements SensorEventListene
                     recording = true;
                     num_of_reps = 0;
                     rep_data.clear();
-                    mp.start();
+                    rep_accel_set.clear();
+                    rep_gyro_set.clear();
+
+
                     start_new_button.setText("Stop");
                     theta = (float)(atan2(ax, ay*-1)*(180/Math.PI)+180);
 
@@ -281,6 +293,14 @@ public class NewActivity extends AppCompatActivity implements SensorEventListene
                     Future future = threadpool.submit(new Runnable()  {
                         public void run() {
                             while (recording) {
+                                double s_ax = BluetoothLeService.n_data_x;
+                                double s_ay = BluetoothLeService.n_data_y;
+                                double s_az = BluetoothLeService.n_data_z;
+                                double s_gx = BluetoothLeService.n_data_gx;
+                                double s_gy = BluetoothLeService.n_data_gy;
+                                double s_gz = BluetoothLeService.n_data_gz;
+
+
                                 vel_x = vel_x/3.0f + Math.round((Math.round(BluetoothLeService.n_data_x*10)/10.0));
                                 cursor_x = cursor_x + (int)vel_x;
 
@@ -292,11 +312,29 @@ public class NewActivity extends AppCompatActivity implements SensorEventListene
                                 //cursor_x+=Math.round(ax*10)/10.0;
                                 //cursor_y+=(Math.round(ay*10)/10.0)/1000.0;
 
-                                double magnitude = Math.sqrt(ax*ax + ay*ay + az*az);
-                                if (rep_data.size() >= 20) {
+                                double accel_magnitude = Math.sqrt(s_ax*s_ax + s_ay*s_ay + s_az*s_az);
+                                double gyro_magnitude = Math.sqrt(s_gx*s_gx + s_gy*s_gy + s_az*s_az);
+                                if (rep_data.size() >= 50) {
                                     rep_data.remove(0);
                                 }
-                                rep_data.add(magnitude);
+                                rep_data.add(accel_magnitude);
+
+                                if (rep_accel_set.size() > 2) {
+                                    if (max_delta < ((double)rep_accel_set.get(0) - (double)rep_accel_set.get(1))) {
+                                        max_delta = ((double)rep_accel_set.get(0) - (double)rep_accel_set.get(1));
+                                    }
+                                    rep_accel_set.remove(0);
+                                }
+                                rep_accel_set.add(accel_magnitude);
+
+                                if (rep_gyro_set.size() > 2) {
+                                    if (max_gyro < ((double)rep_gyro_set.get(0) - (double)rep_gyro_set.get(1))) {
+                                        max_gyro = ((double)rep_gyro_set.get(0) - (double)rep_gyro_set.get(1));
+                                    }
+                                    rep_gyro_set.remove(0);
+                                }
+                                rep_gyro_set.add(gyro_magnitude);
+
                                 double average = 0;
                                 for (int i = 0; i < rep_data.size(); i++) {
                                     average += (double)rep_data.get(i);
@@ -305,18 +343,43 @@ public class NewActivity extends AppCompatActivity implements SensorEventListene
 
                                 //num_of_reps = (int)average;
 
-                                if (average > 9 && average < 11) {
+                                if (average > 9.7 && average < 10.2) {
+
                                     if (state.equals("going up")) {
                                         num_of_reps += 1;
+                                        if (max_gyro <= 1.45) {
+                                            good_sound.start();
+                                        }
+                                        else {
+                                            if (max_delta >= 4.58) {
+                                                bad_sound.start();
+                                            }
+                                            else {
+                                                good_sound.start();
+                                            }
+                                        }
+
                                         state = "steady";
+                                        max_delta = 0;
+                                        max_gyro = 0;
+                                        rep_data.clear();
+                                        rep_accel_set.clear();
+                                        rep_gyro_set.clear();
                                     }
+
+                                    max_delta = 0;
+                                    max_gyro = 0;
+                                    rep_data.clear();
+                                    rep_accel_set.clear();
+                                    rep_gyro_set.clear();
+
                                 }
-                                else if (average < 9) {
+                                else if (average <= 9) {
                                     if (state.equals("steady")) {
                                         state = "going down";
                                     }
                                 }
-                                else if (average > 11 ) {
+                                else if (average >= 11) {
                                     if (state.equals("going down")) {
                                         state = "going up";
                                     }
@@ -334,9 +397,10 @@ public class NewActivity extends AppCompatActivity implements SensorEventListene
                                     public void run() {
                                         linechart.invalidate();
                                         DeviceControlActivity.mBluetoothLeService.readCustomCharacteristic();
+                                        t_delta.setText("delta:" + max_delta);
                                         reps.setText("reps:" + num_of_reps);
-                                        theta_v.setText("theta(real):" + Float.toString((float)(atan2(ax, ay*-1)*(180/Math.PI)+180)));
-                                        theta_v2.setText("theta(est):" + theta);
+                                        //theta_v.setText("theta(real):" + Float.toString((float)(atan2(ax, ay*-1)*(180/Math.PI)+180)));
+                                        //theta_v2.setText("theta(est):" + theta);
                                         //sensor_v.setText("sensor:" + DeviceControlActivity.sensor_value);
                                         sensor_v.setText("Accel x:" + Float.toString(BluetoothLeService.n_data_x) + " Accel y:" + Float.toString(BluetoothLeService.n_data_y) + " Accel z:" + Float.toString(BluetoothLeService.n_data_z));
                                         //sensor_v.setText("sensor y:" + Float.toString(BluetoothLeService.n_data_y));
@@ -349,13 +413,13 @@ public class NewActivity extends AppCompatActivity implements SensorEventListene
 
                                         // Rohan Jobanputra
                                         // Trying to write to a file when the start button is pressed
-
+                                    /*
                                         dataarray[0] = "\nAccel x:" + Float.toString(BluetoothLeService.n_data_x);
                                         dataarray[1] = " Accel y:" + Float.toString(BluetoothLeService.n_data_y);
                                         dataarray[2] = " Accel z:" + Float.toString(BluetoothLeService.n_data_z);
                                         writeToFile(dataarray);
 
-
+                                    */
                                         //Save(Float.toString(BluetoothLeService.n_data_x));
 
 
@@ -377,7 +441,6 @@ public class NewActivity extends AppCompatActivity implements SensorEventListene
 
                 }
                 else{
-                    mp.stop();
                     recording = false;
                     start_new_button.setText("Start");
                 }

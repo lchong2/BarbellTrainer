@@ -48,28 +48,20 @@
                     android:id="@+id/sv"/>
 
                 <TextView
-                    android:text="theta(real):"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="24dp"
-                    android:layout_marginStart="24dp"
-                    android:id="@+id/tv"/>
-
-                <TextView
-                    android:text="theta(est):"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="24dp"
-                    android:layout_marginStart="24dp"
-                    android:id="@+id/tv2"/>
-
-                <TextView
                     android:text="reps:"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="24dp"
                     android:layout_marginLeft="24dp"
                     android:id="@+id/reps"/>
+
+            `   <TextView
+                    android:text="delta:"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="24dp"
+                    android:layout_marginLeft="24dp"
+                    android:id="@+id/delta"/>
 
 
 
