@@ -77,12 +77,15 @@ public class NewActivity extends AppCompatActivity implements SensorEventListene
 
     // Reps-------------------------------
     int num_of_reps = 0;
+    int consistency = 0;
+    final int threshhold = 5;
+    double average = 0;
     ArrayList rep_data = new ArrayList();
     ArrayList rep_accel_set = new ArrayList();
     ArrayList rep_gyro_set = new ArrayList();
     double max_delta = 0;
     double max_gyro = 0;
-    String state = "steady";
+    String state = "steady top";
     //-------------------------------------
 
 
@@ -205,6 +208,7 @@ public class NewActivity extends AppCompatActivity implements SensorEventListene
         // Music-------------------------------
         final MediaPlayer good_sound = MediaPlayer.create(this, R.raw.good);
         final MediaPlayer bad_sound = MediaPlayer.create(this, R.raw.bad);
+        final MediaPlayer fart_sound = MediaPlayer.create(this, R.raw.fart);
         AudioManager audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
         audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, 20, 0);
         //---------------------------------------
@@ -280,7 +284,8 @@ public class NewActivity extends AppCompatActivity implements SensorEventListene
                     rep_data.clear();
                     rep_accel_set.clear();
                     rep_gyro_set.clear();
-
+                    max_gyro = max_delta = consistency = 0;
+                    state = "steady top";
 
                     start_new_button.setText("Stop");
                     theta = (float)(atan2(ax, ay*-1)*(180/Math.PI)+180);
@@ -313,8 +318,8 @@ public class NewActivity extends AppCompatActivity implements SensorEventListene
                                 //cursor_y+=(Math.round(ay*10)/10.0)/1000.0;
 
                                 double accel_magnitude = Math.sqrt(s_ax*s_ax + s_ay*s_ay + s_az*s_az);
-                                double gyro_magnitude = Math.sqrt(s_gx*s_gx + s_gy*s_gy + s_az*s_az);
-                                if (rep_data.size() >= 50) {
+                                double gyro_magnitude = Math.sqrt(s_gx*s_gx + s_gy*s_gy + s_gz*s_gz);
+                                if (rep_data.size() >= 25) {
                                     rep_data.remove(0);
                                 }
                                 rep_data.add(accel_magnitude);
@@ -325,6 +330,7 @@ public class NewActivity extends AppCompatActivity implements SensorEventListene
                                     }
                                     rep_accel_set.remove(0);
                                 }
+
                                 rep_accel_set.add(accel_magnitude);
 
                                 if (rep_gyro_set.size() > 2) {
@@ -335,7 +341,7 @@ public class NewActivity extends AppCompatActivity implements SensorEventListene
                                 }
                                 rep_gyro_set.add(gyro_magnitude);
 
-                                double average = 0;
+                                average = 0;
                                 for (int i = 0; i < rep_data.size(); i++) {
                                     average += (double)rep_data.get(i);
                                 }
@@ -343,45 +349,72 @@ public class NewActivity extends AppCompatActivity implements SensorEventListene
 
                                 //num_of_reps = (int)average;
 
-                                if (average > 9.7 && average < 10.2) {
+                                if (average > 9 && average < 11  ) {
 
-                                    if (state.equals("going up")) {
-                                        num_of_reps += 1;
-                                        if (max_gyro <= 1.45) {
-                                            good_sound.start();
-                                        }
-                                        else {
-                                            if (max_delta >= 4.58) {
-                                                bad_sound.start();
-                                            }
-                                            else {
+                                    if (state.equals("going up 2")) {
+                                        consistency++;
+                                        if(consistency >= 2) {
+                                            num_of_reps += 1;
+                                            if (max_gyro <= 1.0) {
                                                 good_sound.start();
                                             }
-                                        }
+                                            else {
+                                                bad_sound.start();
+                                            }
 
-                                        state = "steady";
-                                        max_delta = 0;
-                                        max_gyro = 0;
-                                        rep_data.clear();
-                                        rep_accel_set.clear();
-                                        rep_gyro_set.clear();
+                                            state = "steady top";
+                                            max_delta = 0;
+                                            max_gyro = 0;
+                                            rep_data.clear();
+                                            rep_accel_set.clear();
+                                            rep_gyro_set.clear();
+                                            consistency = 0;
+                                        }
                                     }
 
-                                    max_delta = 0;
-                                    max_gyro = 0;
-                                    rep_data.clear();
-                                    rep_accel_set.clear();
-                                    rep_gyro_set.clear();
+                                    if (state.equals("going down 2")) {
+                                        consistency++;
+                                        if(consistency >= 2) {
+                                            state = "steady bot";
+                                            consistency = 0;
+                                        }
+                                    }
 
                                 }
                                 else if (average <= 9) {
-                                    if (state.equals("steady")) {
-                                        state = "going down";
+                                    if (state.equals("steady top")) {
+                                        consistency++;
+                                        if(consistency >= 3) {
+                                            state = "going down";
+                                            consistency = 0;
+                                        }
+                                    }
+
+                                    if (state.equals("going up")) {
+                                        consistency++;
+                                        if(consistency >= 1) {
+                                            state = "going up 2";
+                                            consistency = 0;
+                                        }
                                     }
                                 }
                                 else if (average >= 11) {
+
                                     if (state.equals("going down")) {
-                                        state = "going up";
+                                        consistency++;
+                                        if(consistency >= 2) {
+                                            state = "going down 2";
+                                            consistency = 0;
+                                            fart_sound.start();
+                                        }
+                                    }
+
+                                    if (state.equals("steady bot")) {
+                                        consistency++;
+                                        if(consistency >= 3) {
+                                            state = "going up";
+                                            consistency = 0;
+                                        }
                                     }
                                 }
 
@@ -397,7 +430,7 @@ public class NewActivity extends AppCompatActivity implements SensorEventListene
                                     public void run() {
                                         linechart.invalidate();
                                         DeviceControlActivity.mBluetoothLeService.readCustomCharacteristic();
-                                        t_delta.setText("delta:" + max_delta);
+                                        t_delta.setText("state: " + state);
                                         reps.setText("reps:" + num_of_reps);
                                         //theta_v.setText("theta(real):" + Float.toString((float)(atan2(ax, ay*-1)*(180/Math.PI)+180)));
                                         //theta_v2.setText("theta(est):" + theta);
