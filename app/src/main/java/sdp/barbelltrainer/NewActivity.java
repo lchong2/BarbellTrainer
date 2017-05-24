@@ -83,10 +83,28 @@ public class NewActivity extends AppCompatActivity implements SensorEventListene
     ArrayList rep_data = new ArrayList();
     ArrayList rep_accel_set = new ArrayList();
     ArrayList rep_gyro_set = new ArrayList();
-    double max_delta = 0;
-    double max_gyro = 0;
     String state = "steady top";
     //-------------------------------------
+
+    // ML features--------------------------
+    ArrayList max_delta_z_set = new ArrayList();
+    ArrayList avg_delta_y_set = new ArrayList();
+    ArrayList avg_delta_z_set = new ArrayList();
+
+    int avg_delta_y_count = 0;
+    int avg_delta_z_count = 0;
+
+    double max_delta = 0;
+    double max_gyro = 0;
+
+    double max_gyro_x = 0;
+    double max_delta_z = 0;
+    double avg_delta_y = 0;
+    double max_gyro_y = 0;
+    double avg_delta_z = 0;
+    double max_gyro_z = 0;
+
+    //------------------------------------------
 
 
 
@@ -284,7 +302,21 @@ public class NewActivity extends AppCompatActivity implements SensorEventListene
                     rep_data.clear();
                     rep_accel_set.clear();
                     rep_gyro_set.clear();
+                    max_delta_z_set.clear();
+                    avg_delta_y_set.clear();
+                    avg_delta_z_set.clear();
+
+                    avg_delta_y_count = 0;
+                    avg_delta_z_count = 0;
                     max_gyro = max_delta = consistency = 0;
+
+                    max_gyro_x = 0;
+                    max_delta_z = 0;
+                    avg_delta_y = 0;
+                    max_gyro_y = 0;
+                    avg_delta_z = 0;
+                    max_gyro_z = 0;
+
                     state = "steady top";
 
                     start_new_button.setText("Stop");
@@ -319,7 +351,7 @@ public class NewActivity extends AppCompatActivity implements SensorEventListene
 
                                 double accel_magnitude = Math.sqrt(s_ax*s_ax + s_ay*s_ay + s_az*s_az);
                                 double gyro_magnitude = Math.sqrt(s_gx*s_gx + s_gy*s_gy + s_gz*s_gz);
-                                if (rep_data.size() >= 25) {
+                                if (rep_data.size() >= 3) {
                                     rep_data.remove(0);
                                 }
                                 rep_data.add(accel_magnitude);
@@ -347,28 +379,133 @@ public class NewActivity extends AppCompatActivity implements SensorEventListene
                                 }
                                 average /= rep_data.size();
 
-                                //num_of_reps = (int)average;
+                                // More ML Feature creation--
+                                if (max_gyro_x < s_gx) {
+                                    max_gyro_x = s_gx;
+                                }
+                                if (max_gyro_y < s_gy) {
+                                    max_gyro_y = s_gy;
+                                }
+                                if (max_gyro_z < s_gz) {
+                                    max_gyro_z = s_gz;
+                                }
 
-                                if (average > 9 && average < 11  ) {
+                                if (max_delta_z_set.size() > 2) {
+                                    if (max_delta_z < ((double)max_delta_z_set.get(0) - (double)max_delta_z_set.get(1))) {
+                                        max_delta_z = ((double)max_delta_z_set.get(0) - (double)max_delta_z_set.get(1));
+                                    }
+                                    max_delta_z_set.remove(0);
+                                }
+                                max_delta_z_set.add(s_az);
+
+                                if (avg_delta_y_set.size() > 2) {
+                                    avg_delta_y += ((double)avg_delta_y_set.get(0) - (double)avg_delta_y_set.get(1));
+                                    avg_delta_y_set.remove(0);
+                                    avg_delta_y_count ++;
+                                }
+                                avg_delta_y_set.add(s_ay);
+
+                                if (avg_delta_z_set.size() > 2) {
+                                    avg_delta_z += ((double)avg_delta_z_set.get(0) - (double)avg_delta_z_set.get(1));
+                                    avg_delta_z_set.remove(0);
+                                    avg_delta_z_count++;
+                                }
+                                avg_delta_z_set.add(s_az);
+
+                                //--------------------------
+
+
+                                if (average > 9.0 && average < 11.0 ) {
 
                                     if (state.equals("going up 2")) {
                                         consistency++;
                                         if(consistency >= 2) {
                                             num_of_reps += 1;
-                                            if (max_gyro <= 1.0) {
-                                                good_sound.start();
+
+                                            avg_delta_y/=avg_delta_y_count;
+                                            avg_delta_z/=avg_delta_z_count;
+                                            // ML ALGORITHM CHECK
+                                            if(max_gyro <= 1.131) {
+                                                if(max_delta <= 1.215) {
+                                                    bad_sound.start();
+                                                }
+                                                else {
+                                                    good_sound.start();
+                                                }
                                             }
                                             else {
-                                                bad_sound.start();
+                                                if(max_gyro_x <= 0.09) {
+                                                    if(max_delta_z <= 1.69) {
+                                                        if(avg_delta_y <= -0.001233) {
+                                                            good_sound.start();
+                                                        }
+                                                        else {
+                                                            if(avg_delta_y <= 0.00049) {
+                                                                bad_sound.start();
+                                                            }
+                                                            else {
+                                                                if(max_gyro_x <= 0.06) {
+                                                                    good_sound.start();
+                                                                }
+                                                                else {
+                                                                    if(max_gyro_y <= 0.93) {
+                                                                        good_sound.start();
+                                                                    }
+                                                                    else {
+                                                                        bad_sound.start();
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                    else {
+                                                        if(max_delta_z > 1.69) {
+                                                            good_sound.start();
+                                                        }
+                                                    }
+                                                }
+                                                else {
+                                                    if(avg_delta_z <= -0.002308) {
+                                                        if(max_gyro_z <= 0.07) {
+                                                            bad_sound.start();
+                                                        }
+                                                        else {
+                                                            if(avg_delta_y<= -0.000678) {
+                                                                good_sound.start();
+                                                            }
+                                                            else {
+                                                                bad_sound.start();
+                                                            }
+                                                        }
+                                                    }
+                                                    else {
+                                                        bad_sound.start();
+                                                    }
+                                                }
                                             }
-
+                                            //--------------------
                                             state = "steady top";
                                             max_delta = 0;
                                             max_gyro = 0;
                                             rep_data.clear();
                                             rep_accel_set.clear();
                                             rep_gyro_set.clear();
+                                            max_delta_z_set.clear();
+
+                                            avg_delta_y_set.clear();
+                                            avg_delta_z_set.clear();
+
                                             consistency = 0;
+
+                                            avg_delta_y_count = 0;
+                                            avg_delta_z_count = 0;
+
+                                            max_gyro_x = 0;
+                                            max_delta_z = 0;
+                                            avg_delta_y = 0;
+                                            max_gyro_y = 0;
+                                            avg_delta_z = 0;
+                                            max_gyro_z = 0;
                                         }
                                     }
 
@@ -381,10 +518,10 @@ public class NewActivity extends AppCompatActivity implements SensorEventListene
                                     }
 
                                 }
-                                else if (average <= 9) {
+                                else if (average <= 9.0) {
                                     if (state.equals("steady top")) {
                                         consistency++;
-                                        if(consistency >= 3) {
+                                        if(consistency >= 1) {
                                             state = "going down";
                                             consistency = 0;
                                         }
@@ -398,20 +535,19 @@ public class NewActivity extends AppCompatActivity implements SensorEventListene
                                         }
                                     }
                                 }
-                                else if (average >= 11) {
+                                else if (average >= 11.0) {
 
                                     if (state.equals("going down")) {
                                         consistency++;
-                                        if(consistency >= 2) {
+                                        if(consistency >= 1) {
                                             state = "going down 2";
                                             consistency = 0;
-                                            fart_sound.start();
                                         }
                                     }
 
                                     if (state.equals("steady bot")) {
                                         consistency++;
-                                        if(consistency >= 3) {
+                                        if(consistency >= 1) {
                                             state = "going up";
                                             consistency = 0;
                                         }
