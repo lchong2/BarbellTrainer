@@ -351,9 +351,18 @@ public class NewActivity extends AppCompatActivity implements SensorEventListene
 
                                 double accel_magnitude = Math.sqrt(s_ax*s_ax + s_ay*s_ay + s_az*s_az);
                                 double gyro_magnitude = Math.sqrt(s_gx*s_gx + s_gy*s_gy + s_gz*s_gz);
-                                if (rep_data.size() >= 3) {
+                                if (rep_data.size() >= 40) {
                                     rep_data.remove(0);
                                 }
+                                //attempt at some filtering
+                                /*
+                                if (!rep_data.isEmpty()) {
+                                    if (Math.abs(((double)rep_data.get(rep_data.size()-1) - accel_magnitude)) >= 2.0) {
+                                        continue;
+                                    }
+                                }
+                                */
+                                //---------------------------------------------------------------------------------------
                                 rep_data.add(accel_magnitude);
 
                                 if (rep_accel_set.size() > 2) {
@@ -378,6 +387,7 @@ public class NewActivity extends AppCompatActivity implements SensorEventListene
                                     average += (double)rep_data.get(i);
                                 }
                                 average /= rep_data.size();
+
 
                                 // More ML Feature creation--
                                 if (max_gyro_x < s_gx) {
@@ -415,11 +425,25 @@ public class NewActivity extends AppCompatActivity implements SensorEventListene
                                 //--------------------------
 
 
-                                if (average > 9.0 && average < 11.0 ) {
+                                if (average > 9.3 && average < 10.7 ) {
+                                    if (state.equals("going up")) {
+                                        consistency++;
+                                        if(consistency >=6) {
+                                            state = "going up 2";
+                                        }
+                                    }
+
+                                    if (state.equals("going down")) {
+                                        consistency++;
+                                        if(consistency >=6) {
+                                            state = "steady bot";
+                                            consistency = 0;
+                                        }
+                                    }
 
                                     if (state.equals("going up 2")) {
                                         consistency++;
-                                        if(consistency >= 2) {
+                                        if(consistency >= 3) {
                                             num_of_reps += 1;
 
                                             avg_delta_y/=avg_delta_y_count;
@@ -511,17 +535,17 @@ public class NewActivity extends AppCompatActivity implements SensorEventListene
 
                                     if (state.equals("going down 2")) {
                                         consistency++;
-                                        if(consistency >= 2) {
+                                        if(consistency >= 3) {
                                             state = "steady bot";
                                             consistency = 0;
                                         }
                                     }
 
                                 }
-                                else if (average <= 9.0) {
+                                else if (average <= 9.3) {
                                     if (state.equals("steady top")) {
                                         consistency++;
-                                        if(consistency >= 1) {
+                                        if(consistency >= 3) {
                                             state = "going down";
                                             consistency = 0;
                                         }
@@ -529,17 +553,17 @@ public class NewActivity extends AppCompatActivity implements SensorEventListene
 
                                     if (state.equals("going up")) {
                                         consistency++;
-                                        if(consistency >= 1) {
+                                        if(consistency >= 3) {
                                             state = "going up 2";
                                             consistency = 0;
                                         }
                                     }
                                 }
-                                else if (average >= 11.0) {
+                                else if (average >= 10.7) {
 
                                     if (state.equals("going down")) {
                                         consistency++;
-                                        if(consistency >= 1) {
+                                        if(consistency >= 3) {
                                             state = "going down 2";
                                             consistency = 0;
                                         }
@@ -547,7 +571,7 @@ public class NewActivity extends AppCompatActivity implements SensorEventListene
 
                                     if (state.equals("steady bot")) {
                                         consistency++;
-                                        if(consistency >= 1) {
+                                        if(consistency >= 3) {
                                             state = "going up";
                                             consistency = 0;
                                         }
