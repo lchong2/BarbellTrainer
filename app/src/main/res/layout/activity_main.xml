@@ -12,23 +12,32 @@
 
 
     <Button
+        android:id="@+id/connect_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:text="@string/connect_button"
+        android:layout_below="@+id/Help_Button"
+        android:layout_alignStart="@+id/Help_Button" />
+
+    <Button
+        android:id="@+id/camera_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="26dp"
+        android:text="Camera"
+        android:layout_below="@+id/connect_button"
+        android:layout_alignEnd="@+id/connect_button" />
+
+    <Button
         android:text="@string/log_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="31dp"
+        android:id="@+id/log_button"
         android:layout_below="@+id/new_button"
-        android:layout_alignLeft="@+id/new_button"
-        android:layout_alignStart="@+id/new_button"
-        android:layout_marginTop="65dp"
-        android:id="@+id/log_button" />
+        android:layout_alignStart="@+id/new_button" />
 
-    <Button
-        android:text="@string/connect_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignStart="@+id/Help_Button"
-        android:layout_below="@+id/Help_Button"
-        android:layout_marginTop="52dp"
-        android:id="@+id/connect_button" />
 
     <Button
         android:text="@string/new_button"
@@ -43,7 +52,7 @@
         android:text="@string/help_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="53dp"
+        android:layout_marginTop="33dp"
         android:id="@+id/Help_Button"
         android:layout_below="@+id/log_button"
         android:layout_alignStart="@+id/log_button" />

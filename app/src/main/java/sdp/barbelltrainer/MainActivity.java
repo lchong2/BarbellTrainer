@@ -16,7 +16,7 @@ public class MainActivity extends AppCompatActivity {
     private Button new_button;
     private Button log_button;
     private Button connect_button;
-
+    private Button camera_button;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,6 +44,7 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(i);
             }
         });
+        // Listener for "Connect" button
 
         connect_button = (Button)findViewById(R.id.connect_button);
         connect_button.setOnClickListener(new View.OnClickListener() {
@@ -51,6 +52,18 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 // Start New.java
                 Intent i = new Intent(MainActivity.this, DeviceScanActivity.class);
+                startActivity(i);
+            }
+        });
+
+        // Listener for "camera" button
+
+        camera_button = (Button)findViewById(R.id.camera_button);
+        camera_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Start New.java
+                Intent i = new Intent(MainActivity.this, CameraActivity.class);
                 startActivity(i);
             }
         });
