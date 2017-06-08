@@ -78,6 +78,8 @@ public class NewActivity extends AppCompatActivity implements SensorEventListene
     // Reps-------------------------------
     int num_of_reps = 0;
     int consistency = 0;
+    int consistency2 = 0;
+    int consistency3 = 0;
     final int threshhold = 5;
     double average = 0;
     ArrayList rep_data = new ArrayList();
@@ -112,7 +114,7 @@ public class NewActivity extends AppCompatActivity implements SensorEventListene
     //Rohan
     private static final String TAG = MainActivity.class.getName();
 
-// Make sure we go back to the main menu
+    // Make sure we go back to the main menu
     public void onBackPressed() {
         Intent i = new Intent(this, MainActivity.class);
         startActivity(i);
@@ -120,7 +122,7 @@ public class NewActivity extends AppCompatActivity implements SensorEventListene
 
     }
 
-// Accelerometer functions vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
+    // Accelerometer functions vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
     protected void onPause() {
         super.onPause();
         sensorManager.unregisterListener(this);
@@ -231,7 +233,7 @@ public class NewActivity extends AppCompatActivity implements SensorEventListene
         audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, 20, 0);
         //---------------------------------------
 
-    // LineChart vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
+        // LineChart vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
         // LineChart object
         linechart = (LineChart) findViewById((R.id.linechart));
 
@@ -269,9 +271,9 @@ public class NewActivity extends AppCompatActivity implements SensorEventListene
         linechart.setDragEnabled(true);
         linechart.setScaleEnabled(true);
         linechart.setTouchEnabled(true);
-    // LineChart ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        // LineChart ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-    // Initializing accelerometer vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
+        // Initializing accelerometer vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 
         //final TextView xtext = (TextView) findViewById(R.id.ax);
         //final TextView ytext = (TextView) findViewById(R.id.ay);
@@ -287,10 +289,10 @@ public class NewActivity extends AppCompatActivity implements SensorEventListene
         gyro = sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE_UNCALIBRATED);
         sensorManager.registerListener(this, accel, SensorManager.SENSOR_DELAY_NORMAL);
 
-    // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 
-    // Start Button vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
+        // Start Button vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
         // Listener for "Start" button in NewActivity
         start_new_button = (Button)findViewById(R.id.start_new_button);
         start_new_button.setOnClickListener(new View.OnClickListener() {
@@ -355,13 +357,16 @@ public class NewActivity extends AppCompatActivity implements SensorEventListene
                                     rep_data.remove(0);
                                 }
                                 //attempt at some filtering
-                                /*
+
                                 if (!rep_data.isEmpty()) {
-                                    if (Math.abs(((double)rep_data.get(rep_data.size()-1) - accel_magnitude)) >= 2.0) {
-                                        continue;
+                                    if (((double)rep_data.get(rep_data.size()-1) - accel_magnitude) >= 1.5) {
+                                        accel_magnitude = (double)rep_data.get(rep_data.size()-1) - 1;
+                                    }
+                                    else if (accel_magnitude - ((double)rep_data.get(rep_data.size()-1)) >= 1.5) {
+                                        accel_magnitude =  (double)rep_data.get(rep_data.size()-1) + 1;
                                     }
                                 }
-                                */
+
                                 //---------------------------------------------------------------------------------------
                                 rep_data.add(accel_magnitude);
 
@@ -425,25 +430,22 @@ public class NewActivity extends AppCompatActivity implements SensorEventListene
                                 //--------------------------
 
 
-                                if (average > 9.3 && average < 10.7 ) {
-                                    if (state.equals("going up")) {
-                                        consistency++;
-                                        if(consistency >=6) {
-                                            state = "going up 2";
-                                        }
-                                    }
+                                if (average > 9.5 && average < 10.5 ) {
 
                                     if (state.equals("going down")) {
                                         consistency++;
-                                        if(consistency >=6) {
+                                        if(consistency >=3) {
                                             state = "steady bot";
                                             consistency = 0;
                                         }
                                     }
 
-                                    if (state.equals("going up 2")) {
+
+
+                                    if(state.equals("going up")) {
                                         consistency++;
-                                        if(consistency >= 3) {
+                                        if (consistency >= 5) {
+
                                             num_of_reps += 1;
 
                                             avg_delta_y/=avg_delta_y_count;
@@ -531,49 +533,29 @@ public class NewActivity extends AppCompatActivity implements SensorEventListene
                                             avg_delta_z = 0;
                                             max_gyro_z = 0;
                                         }
-                                    }
 
-                                    if (state.equals("going down 2")) {
-                                        consistency++;
-                                        if(consistency >= 3) {
-                                            state = "steady bot";
-                                            consistency = 0;
-                                        }
                                     }
-
                                 }
-                                else if (average <= 9.3) {
-                                    if (state.equals("steady top")) {
-                                        consistency++;
-                                        if(consistency >= 3) {
-                                            state = "going down";
-                                            consistency = 0;
-                                        }
-                                    }
 
-                                    if (state.equals("going up")) {
-                                        consistency++;
-                                        if(consistency >= 3) {
-                                            state = "going up 2";
-                                            consistency = 0;
+                                else if (average <= 9.3) {
+                                    consistency = 0;
+                                    if (state.equals("steady top")) {
+                                        consistency3++;
+                                        if(consistency3 >= 5) {
+                                            state = "going down";
+                                            consistency3 = 0;
                                         }
+
                                     }
                                 }
                                 else if (average >= 10.7) {
-
-                                    if (state.equals("going down")) {
-                                        consistency++;
-                                        if(consistency >= 3) {
-                                            state = "going down 2";
-                                            consistency = 0;
-                                        }
-                                    }
+                                    consistency = 0;
 
                                     if (state.equals("steady bot")) {
-                                        consistency++;
-                                        if(consistency >= 3) {
+                                        consistency2++;
+                                        if(consistency2 >= 5) {
                                             state = "going up";
-                                            consistency = 0;
+                                            consistency2 = 0;
                                         }
                                     }
                                 }
@@ -642,7 +624,7 @@ public class NewActivity extends AppCompatActivity implements SensorEventListene
             }
         });
 
-    // Start Button ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        // Start Button ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     }
 
 }
