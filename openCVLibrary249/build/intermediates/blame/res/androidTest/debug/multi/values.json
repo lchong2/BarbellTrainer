@@ -1,14 +1,18 @@
 [
     {
-        "outputFile": "/Volumes/WuTang_Mac/Android/BarbellTrainer/openCVLibrary249/build/intermediates/incremental/mergeDebugAndroidTestResources/merged.dir/values/values.xml",
+        "outputFile": "C:\\Volumes\\WuTang_Mac\\Android\\BarbellTrainer\\openCVLibrary249\\build\\intermediates\\incremental\\mergeDebugAndroidTestResources\\merged.dir\\values\\values.xml",
         "map": []
     },
     {
-        "outputFile": "/Volumes/WuTang_Mac/Android/Projects/BarbellTrainer-master/openCVLibrary249/build/intermediates/incremental/mergeDebugAndroidTestResources/merged.dir/values/values.xml",
+        "outputFile": "C:\\Users\\rjjobanp\\Downloads\\BarbellTrainer\\openCVLibrary249\\build\\intermediates\\incremental\\mergeDebugAndroidTestResources\\merged.dir\\values\\values.xml",
         "map": []
     },
     {
-        "outputFile": "/Volumes/WuTang_Mac/Android/Projects/BarbellTrainer/openCVLibrary249/build/intermediates/incremental/mergeDebugAndroidTestResources/merged.dir/values/values.xml",
+        "outputFile": "C:\\Volumes\\WuTang_Mac\\Android\\Projects\\BarbellTrainer\\openCVLibrary249\\build\\intermediates\\incremental\\mergeDebugAndroidTestResources\\merged.dir\\values\\values.xml",
+        "map": []
+    },
+    {
+        "outputFile": "C:\\Volumes\\WuTang_Mac\\Android\\Projects\\BarbellTrainer-master\\openCVLibrary249\\build\\intermediates\\incremental\\mergeDebugAndroidTestResources\\merged.dir\\values\\values.xml",
         "map": []
     }
 ]

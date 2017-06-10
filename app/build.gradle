@@ -18,7 +18,7 @@ android {
     }
     task ndkBuild(type: Exec, description: 'Compile JNI source via NDK') {
         //change the command line to "your path to /SDK/ndk-bundle/ndk-build"
-        commandLine "/Volumes/WuTang_Mac/Android/Library/SDK/ndk-bundle/ndk-build",
+        commandLine "C:\\Users\\rjjobanp\\AppData\\Local\\Android\\sdk\\ndk-bundle\\ndk-build.cmd",
                 'NDK_PROJECT_PATH=build/intermediates/ndk',
                 'NDK_LIBS_OUT=src/main/jniLibs',
                 'APP_BUILD_SCRIPT=src/main/jni/Android.mk',

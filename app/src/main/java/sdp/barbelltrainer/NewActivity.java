@@ -1,6 +1,7 @@
 package sdp.barbelltrainer;
 
 import android.media.AudioManager;
+import android.media.Image;
 import android.media.MediaPlayer;
 import android.app.Activity;
 import android.content.Context;
@@ -43,6 +44,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.FutureTask;
 
+import android.widget.ImageView;
+
 import static com.github.mikephil.charting.components.XAxis.XAxisPosition.BOTH_SIDED;
 import static java.lang.Math.atan2;
 import static java.lang.Thread.sleep;
@@ -67,6 +70,10 @@ public class NewActivity extends AppCompatActivity implements SensorEventListene
     static ExecutorService threadpool = Executors.newFixedThreadPool(4);
 
     private Button start_new_button;
+
+    //Rohan
+    private ImageView image_view;
+    //
     static boolean recording;
 
     static LineChart linechart;
@@ -235,7 +242,10 @@ public class NewActivity extends AppCompatActivity implements SensorEventListene
 
         // LineChart vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
         // LineChart object
-        linechart = (LineChart) findViewById((R.id.linechart));
+
+        //Rohan - disabled line chart
+        //linechart = (LineChart) findViewById((R.id.linechart));
+        //
 
         // x-axis
         x_axis = new ArrayList<>();
@@ -250,27 +260,27 @@ public class NewActivity extends AppCompatActivity implements SensorEventListene
         entries.add(new Entry(cursor_y, cursor_x));
 
         //LineDataSet
-        linedataset = new LineDataSet(entries, "bar path");
-        linedataset.setColor(Color.RED);
-
-        //List of ILineDataSet
-        ArrayList<ILineDataSet> set = new ArrayList<>();
-        set.add(linedataset);
-
-        //LineData
-        linedata = new LineData(x_axis, set);
-        linechart.setData(linedata);
-        linechart.invalidate();
-
-        //Styling linechart
-        linedataset.setDrawValues(false);
-        linedataset.setHighlightEnabled(false);
-        linedataset.setDrawCircles(false);
-        linechart.setDescription("");
-        linechart.setPinchZoom(true);
-        linechart.setDragEnabled(true);
-        linechart.setScaleEnabled(true);
-        linechart.setTouchEnabled(true);
+//        linedataset = new LineDataSet(entries, "bar path");
+//        linedataset.setColor(Color.RED);
+//
+//        //List of ILineDataSet
+//        ArrayList<ILineDataSet> set = new ArrayList<>();
+//        set.add(linedataset);
+//
+//        //LineData
+//        linedata = new LineData(x_axis, set);
+//        linechart.setData(linedata);
+//        linechart.invalidate();
+//
+//        //Styling linechart
+//        linedataset.setDrawValues(false);
+//        linedataset.setHighlightEnabled(false);
+//        linedataset.setDrawCircles(false);
+//        linechart.setDescription("");
+//        linechart.setPinchZoom(true);
+//        linechart.setDragEnabled(true);
+//        linechart.setScaleEnabled(true);
+//        linechart.setTouchEnabled(true);
         // LineChart ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
         // Initializing accelerometer vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
@@ -295,6 +305,9 @@ public class NewActivity extends AppCompatActivity implements SensorEventListene
         // Start Button vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
         // Listener for "Start" button in NewActivity
         start_new_button = (Button)findViewById(R.id.start_new_button);
+        // Rohan
+        image_view = (ImageView)findViewById(R.id.imageView2);
+        //
         start_new_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -427,8 +440,20 @@ public class NewActivity extends AppCompatActivity implements SensorEventListene
                                 }
                                 avg_delta_z_set.add(s_az);
 
-                                //--------------------------
+                                //--------------------------ROHAN JOBANPUTRA --------------------//
+                                runOnUiThread(new Runnable() {
+                                    public void run() {
+                                        if (state.equals("going up")){
+                                            image_view.setImageResource(R.drawable.squat1);
 
+                                        }
+                                        else {
+                                            image_view.setImageResource(R.drawable.squat2);
+                                        }
+                                    }
+                                });
+
+                                //------------------------------------------------------------------//
 
                                 if (average > 9.5 && average < 10.5 ) {
 
@@ -444,6 +469,7 @@ public class NewActivity extends AppCompatActivity implements SensorEventListene
 
                                     if(state.equals("going up")) {
                                         consistency++;
+
                                         if (consistency >= 5) {
 
                                             num_of_reps += 1;
@@ -560,8 +586,8 @@ public class NewActivity extends AppCompatActivity implements SensorEventListene
                                     }
                                 }
 
-                                linedataset.addEntry(new Entry(cursor_y,cursor_x));
-                                linechart.notifyDataSetChanged();
+//                                linedataset.addEntry(new Entry(cursor_y,cursor_x));
+//                                linechart.notifyDataSetChanged();
 
                                 theta-=gz*0.01*(180/Math.PI);
                                 if (Math.round(theta) == -1) {
@@ -570,7 +596,7 @@ public class NewActivity extends AppCompatActivity implements SensorEventListene
                                 theta = theta % 360;
                                 runOnUiThread(new Runnable() {
                                     public void run() {
-                                        linechart.invalidate();
+                                        //linechart.invalidate();
                                         DeviceControlActivity.mBluetoothLeService.readCustomCharacteristic();
                                         t_delta.setText("state: " + state);
                                         reps.setText("reps:" + num_of_reps);
