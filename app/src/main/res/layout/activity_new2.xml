@@ -20,13 +20,13 @@
 
 
         <Button
-            android:text="@string/start_new_button"
+            android:id="@+id/start_new_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="28dp"
             android:layout_marginLeft="24dp"
             android:layout_marginStart="24dp"
-            android:layout_marginBottom="28dp"
-            android:id="@+id/start_new_button" />
+            android:text="@string/start_new_button" />
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -34,7 +34,7 @@
             android:orientation="vertical">
 
                 <TextView
-                    android:text="sensor:"
+                    android:text="good/bad: "
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="24dp"
@@ -42,7 +42,7 @@
                     android:id="@+id/sv"/>
 
                 <TextView
-                    android:text="reps:"
+                    android:text="reps: "
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="24dp"
@@ -50,7 +50,7 @@
                     android:id="@+id/reps"/>
 
             `   <TextView
-                    android:text="delta:"
+                    android:text="peak velocity: "
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="24dp"

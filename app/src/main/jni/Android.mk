@@ -4,7 +4,7 @@ include $(CLEAR_VARS)
 
 #opencv
 #change the OPENCVROOT if you work on a different computer
-OPENCVROOT:= C:/Users/rjjobanp/Downloads/newapp_camera/BarbellTrainer/BarbellTrainer/OpenCV-2.4.9-android-sdk
+OPENCVROOT:= C:\Users\lchong2\StudioProjects\BarbellTrainer\OpenCV-2.4.9-android-sdk
 OPENCV_CAMERA_MODULES:=on
 OPENCV_INSTALL_MODULES:=on
 OPENCV_LIB_TYPE:=SHARED

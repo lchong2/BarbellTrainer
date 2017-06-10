@@ -84,10 +84,14 @@ public class NewActivity extends AppCompatActivity implements SensorEventListene
 
     // Reps-------------------------------
     int num_of_reps = 0;
+    int good_count = 0;
+    int bad_count = 0;
     int consistency = 0;
     int consistency2 = 0;
     int consistency3 = 0;
     final int threshhold = 5;
+    double peakvelocity = 0;
+    double peakaccel = 0;
     double average = 0;
     ArrayList rep_data = new ArrayList();
     ArrayList rep_accel_set = new ArrayList();
@@ -314,6 +318,11 @@ public class NewActivity extends AppCompatActivity implements SensorEventListene
                 if(start_new_button.getText().toString().compareTo("Start") == 0){
                     recording = true;
                     num_of_reps = 0;
+                    peakaccel = 0;
+                    peakvelocity = 0;
+                    good_count = 0;
+                    bad_count = 0;
+
                     rep_data.clear();
                     rep_accel_set.clear();
                     rep_gyro_set.clear();
@@ -369,8 +378,16 @@ public class NewActivity extends AppCompatActivity implements SensorEventListene
                                 if (rep_data.size() >= 40) {
                                     rep_data.remove(0);
                                 }
-                                //attempt at some filtering
 
+                                // getting peak velocity
+                                if (rep_data.size() >= 1) {
+                                    if ((double)rep_data.get(rep_data.size()-1) - 10.069 > peakaccel) {
+                                        peakaccel = Math.abs((double)rep_data.get(rep_data.size()-1) - 10.069);
+                                    }
+                                }
+                                peakvelocity = 0.0010 * peakaccel;
+
+                                //attempt at some filtering
                                 if (!rep_data.isEmpty()) {
                                     if (((double)rep_data.get(rep_data.size()-1) - accel_magnitude) >= 1.5) {
                                         accel_magnitude = (double)rep_data.get(rep_data.size()-1) - 1;
@@ -480,9 +497,11 @@ public class NewActivity extends AppCompatActivity implements SensorEventListene
                                             if(max_gyro <= 1.131) {
                                                 if(max_delta <= 1.215) {
                                                     bad_sound.start();
+                                                    bad_count++;
                                                 }
                                                 else {
                                                     good_sound.start();
+                                                    good_count++;
                                                 }
                                             }
                                             else {
@@ -490,21 +509,26 @@ public class NewActivity extends AppCompatActivity implements SensorEventListene
                                                     if(max_delta_z <= 1.69) {
                                                         if(avg_delta_y <= -0.001233) {
                                                             good_sound.start();
+                                                            good_count++;
                                                         }
                                                         else {
                                                             if(avg_delta_y <= 0.00049) {
                                                                 bad_sound.start();
+                                                                bad_count++;
                                                             }
                                                             else {
                                                                 if(max_gyro_x <= 0.06) {
                                                                     good_sound.start();
+                                                                    good_count++;
                                                                 }
                                                                 else {
                                                                     if(max_gyro_y <= 0.93) {
                                                                         good_sound.start();
+                                                                        good_count++;
                                                                     }
                                                                     else {
                                                                         bad_sound.start();
+                                                                        bad_count++;
                                                                     }
                                                                 }
                                                             }
@@ -513,6 +537,8 @@ public class NewActivity extends AppCompatActivity implements SensorEventListene
                                                     else {
                                                         if(max_delta_z > 1.69) {
                                                             good_sound.start();
+                                                            good_count++;
+                                                            bad_count++;
                                                         }
                                                     }
                                                 }
@@ -520,18 +546,22 @@ public class NewActivity extends AppCompatActivity implements SensorEventListene
                                                     if(avg_delta_z <= -0.002308) {
                                                         if(max_gyro_z <= 0.07) {
                                                             bad_sound.start();
+                                                            bad_count++;
                                                         }
                                                         else {
                                                             if(avg_delta_y<= -0.000678) {
                                                                 good_sound.start();
+                                                                good_count++;
                                                             }
                                                             else {
                                                                 bad_sound.start();
+                                                                bad_count++;
                                                             }
                                                         }
                                                     }
                                                     else {
                                                         bad_sound.start();
+                                                        bad_count++;
                                                     }
                                                 }
                                             }
@@ -598,12 +628,12 @@ public class NewActivity extends AppCompatActivity implements SensorEventListene
                                     public void run() {
                                         //linechart.invalidate();
                                         DeviceControlActivity.mBluetoothLeService.readCustomCharacteristic();
-                                        t_delta.setText("state: " + state);
-                                        reps.setText("reps:" + num_of_reps);
+                                        t_delta.setText("peak velocity: " + Math.round(peakvelocity*100.0)/100.0 + " m/s");
+                                        reps.setText("reps: " + num_of_reps);
                                         //theta_v.setText("theta(real):" + Float.toString((float)(atan2(ax, ay*-1)*(180/Math.PI)+180)));
                                         //theta_v2.setText("theta(est):" + theta);
                                         //sensor_v.setText("sensor:" + DeviceControlActivity.sensor_value);
-                                        sensor_v.setText("Accel x:" + Float.toString(BluetoothLeService.n_data_x) + " Accel y:" + Float.toString(BluetoothLeService.n_data_y) + " Accel z:" + Float.toString(BluetoothLeService.n_data_z));
+                                        sensor_v.setText("good/bad: " + good_count + "/" + bad_count);
                                         //sensor_v.setText("sensor y:" + Float.toString(BluetoothLeService.n_data_y));
 
 
