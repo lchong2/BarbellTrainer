@@ -74,6 +74,7 @@ public class NewActivity extends AppCompatActivity implements SensorEventListene
 
     //Rohan
     private ImageView image_view;
+    private ImageView image_view_color;
     //
     static boolean recording;
 
@@ -315,6 +316,7 @@ public class NewActivity extends AppCompatActivity implements SensorEventListene
         start_new_button = (Button)findViewById(R.id.start_new_button);
         // Rohan
         image_view = (ImageView)findViewById(R.id.imageView2);
+        image_view_color = (ImageView)findViewById(R.id.imageView);
         //
         start_new_button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -575,6 +577,25 @@ public class NewActivity extends AppCompatActivity implements SensorEventListene
                                                     }
                                                 }
                                             }
+
+                                            //Rohan Jobanputra
+                                            runOnUiThread(new Runnable() {
+                                                public void run() {
+                                                    if (bad_sound.isPlaying()){
+                                                        image_view_color.setImageResource(R.drawable.red);
+
+                                                    }
+                                                    else if (good_sound.isPlaying()){
+                                                        image_view_color.setImageResource(R.drawable.green);
+                                                    }
+//                                                    if (state.equals("going down")) {
+//                                                        image_view_color.setImageResource(R.drawable.blue);
+//                                                    }
+
+                                                }
+                                            });
+                                            //--------------------------------------
+
                                             //--------------------
                                             state = "steady top";
                                             max_delta = 0;
@@ -603,6 +624,8 @@ public class NewActivity extends AppCompatActivity implements SensorEventListene
                                     }
                                 }
 
+
+
                                 else if (average <= 9.3) {
                                     consistency = 0;
                                     if (state.equals("steady top")) {
@@ -625,6 +648,16 @@ public class NewActivity extends AppCompatActivity implements SensorEventListene
                                         }
                                     }
                                 }
+                                //Rohan Jobanputra
+                                runOnUiThread(new Runnable() {
+                                    public void run() {
+                                        if (state.equals("going up")) {
+                                            image_view_color.setImageResource(R.drawable.blue);
+                                        }
+
+                                    }
+                                });
+                                //--------------------------------------
 
 //                                linedataset.addEntry(new Entry(cursor_y,cursor_x));
 //                                linechart.notifyDataSetChanged();
