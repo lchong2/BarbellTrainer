@@ -374,13 +374,12 @@ public class NewActivity extends AppCompatActivity implements SensorEventListene
                                 cursor_y = cursor_y + vel_y/100.0f;
 
 
-                                if(old_s_ax == s_ax) {
-                                    connect_status = "disconnected";
-                                }
-                                else {
+                                if(s_ax+s_ay+s_az != 0.0) {
                                     connect_status = "connected";
                                 }
-                                old_s_ax = s_ax;
+                                else {
+                                    connect_status = "disconnected";
+                                }
                                 //cursor_x+=Math.round(ax*10)/10.0;
                                 //cursor_y+=(Math.round(ay*10)/10.0)/1000.0;
 
