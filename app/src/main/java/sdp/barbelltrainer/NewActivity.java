@@ -70,6 +70,7 @@ public class NewActivity extends AppCompatActivity implements SensorEventListene
     static ExecutorService threadpool = Executors.newFixedThreadPool(4);
 
     private Button start_new_button;
+    String connect_status = "connected";
 
     //Rohan
     private ImageView image_view;
@@ -97,6 +98,8 @@ public class NewActivity extends AppCompatActivity implements SensorEventListene
     ArrayList rep_accel_set = new ArrayList();
     ArrayList rep_gyro_set = new ArrayList();
     String state = "steady top";
+
+    double old_s_ax = 0;
     //-------------------------------------
 
     // ML features--------------------------
@@ -295,6 +298,7 @@ public class NewActivity extends AppCompatActivity implements SensorEventListene
         final TextView reps = (TextView) findViewById(R.id.reps);
         final TextView t_delta = (TextView) findViewById(R.id.delta);
         final TextView sensor_v = (TextView) findViewById(R.id.sv);
+        final TextView sensor_s = (TextView) findViewById(R.id.ss);
         //final TextView theta_v = (TextView) findViewById(R.id.tv);
         //final TextView theta_v2 = (TextView) findViewById(R.id.tv2);
 
@@ -362,6 +366,7 @@ public class NewActivity extends AppCompatActivity implements SensorEventListene
                                 double s_gz = BluetoothLeService.n_data_gz;
 
 
+
                                 vel_x = vel_x/3.0f + Math.round((Math.round(BluetoothLeService.n_data_x*10)/10.0));
                                 cursor_x = cursor_x + (int)vel_x;
 
@@ -369,7 +374,13 @@ public class NewActivity extends AppCompatActivity implements SensorEventListene
                                 cursor_y = cursor_y + vel_y/100.0f;
 
 
-
+                                if(old_s_ax == s_ax) {
+                                    connect_status = "disconnected";
+                                }
+                                else {
+                                    connect_status = "connected";
+                                }
+                                old_s_ax = s_ax;
                                 //cursor_x+=Math.round(ax*10)/10.0;
                                 //cursor_y+=(Math.round(ay*10)/10.0)/1000.0;
 
@@ -634,6 +645,7 @@ public class NewActivity extends AppCompatActivity implements SensorEventListene
                                         //theta_v2.setText("theta(est):" + theta);
                                         //sensor_v.setText("sensor:" + DeviceControlActivity.sensor_value);
                                         sensor_v.setText("good/bad: " + good_count + "/" + bad_count);
+                                        sensor_s.setText("sensor: " + connect_status);
                                         //sensor_v.setText("sensor y:" + Float.toString(BluetoothLeService.n_data_y));
 
 
