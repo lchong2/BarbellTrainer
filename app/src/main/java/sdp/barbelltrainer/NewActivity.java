@@ -395,7 +395,7 @@ public class NewActivity extends AppCompatActivity implements SensorEventListene
                                         peakaccel = Math.abs((double)rep_data.get(rep_data.size()-1) - 10.069);
                                     }
                                 }
-                                peakvelocity = 0.0010 * peakaccel;
+                                peakvelocity = 0.010 * peakaccel;
 
                                 //attempt at some filtering
                                 if (!rep_data.isEmpty()) {
@@ -638,7 +638,7 @@ public class NewActivity extends AppCompatActivity implements SensorEventListene
                                     public void run() {
                                         //linechart.invalidate();
                                         DeviceControlActivity.mBluetoothLeService.readCustomCharacteristic();
-                                        t_delta.setText("peak velocity: " + Math.round(peakvelocity*100.0)/100.0 + " m/s");
+                                        t_delta.setText("peak velocity: " + Math.round(peakvelocity*1000.0)/1000.0 + " m/s");
                                         reps.setText("reps: " + num_of_reps);
                                         //theta_v.setText("theta(real):" + Float.toString((float)(atan2(ax, ay*-1)*(180/Math.PI)+180)));
                                         //theta_v2.setText("theta(est):" + theta);
