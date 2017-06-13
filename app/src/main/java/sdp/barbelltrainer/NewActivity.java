@@ -108,8 +108,13 @@ public class NewActivity extends AppCompatActivity implements SensorEventListene
     ArrayList avg_delta_y_set = new ArrayList();
     ArrayList avg_delta_z_set = new ArrayList();
 
+    double avg_z_set = 0;
+    double avg_gyro_x_set = 0;
+
     int avg_delta_y_count = 0;
     int avg_delta_z_count = 0;
+    int avg_z_count = 0;
+    int avg_gyro_x_count = 0;
 
     double max_delta = 0;
     double max_gyro = 0;
@@ -120,6 +125,8 @@ public class NewActivity extends AppCompatActivity implements SensorEventListene
     double max_gyro_y = 0;
     double avg_delta_z = 0;
     double max_gyro_z = 0;
+    double avg_z = 0;
+    double avg_gyro_x = 0;
 
     //------------------------------------------
 
@@ -397,7 +404,7 @@ public class NewActivity extends AppCompatActivity implements SensorEventListene
                                         peakaccel = Math.abs((double)rep_data.get(rep_data.size()-1) - 10.069);
                                     }
                                 }
-                                peakvelocity = 0.010 * peakaccel;
+                                peakvelocity = 0.031 * peakaccel;
 
                                 //attempt at some filtering
                                 if (!rep_data.isEmpty()) {
@@ -409,7 +416,7 @@ public class NewActivity extends AppCompatActivity implements SensorEventListene
                                     }
                                 }
 
-                                //---------------------------------------------------------------------------------------
+                                //ML features------------------------------------------------------------------------------------
                                 rep_data.add(accel_magnitude);
 
                                 if (rep_accel_set.size() > 2) {
@@ -469,6 +476,12 @@ public class NewActivity extends AppCompatActivity implements SensorEventListene
                                 }
                                 avg_delta_z_set.add(s_az);
 
+                                avg_gyro_x_set += s_gx;
+                                avg_gyro_x_count++;
+
+                                avg_z_set += s_az;
+                                avg_z_count++;
+
                                 //--------------------------ROHAN JOBANPUTRA --------------------//
                                 runOnUiThread(new Runnable() {
                                     public void run() {
@@ -505,71 +518,52 @@ public class NewActivity extends AppCompatActivity implements SensorEventListene
 
                                             avg_delta_y/=avg_delta_y_count;
                                             avg_delta_z/=avg_delta_z_count;
+                                            avg_z /= avg_z_count;
+                                            avg_gyro_x /= avg_gyro_x_count;
                                             // ML ALGORITHM CHECK
-                                            if(max_gyro <= 1.131) {
-                                                if(max_delta <= 1.215) {
-                                                    bad_sound.start();
-                                                    bad_count++;
-                                                }
-                                                else {
+                                            if(avg_z <= 9.685) {
+                                                if (max_gyro <= 1.02357) {
                                                     good_sound.start();
                                                     good_count++;
                                                 }
-                                            }
-                                            else {
-                                                if(max_gyro_x <= 0.09) {
-                                                    if(max_delta_z <= 1.69) {
-                                                        if(avg_delta_y <= -0.001233) {
+                                                else {
+                                                    if(max_delta <= 3.56) {
+                                                        bad_sound.start();
+                                                        bad_count++;
+                                                    }
+                                                    else {
+                                                        if (max_gyro <= 2.141) {
                                                             good_sound.start();
                                                             good_count++;
                                                         }
                                                         else {
-                                                            if(avg_delta_y <= 0.00049) {
-                                                                bad_sound.start();
-                                                                bad_count++;
-                                                            }
-                                                            else {
-                                                                if(max_gyro_x <= 0.06) {
-                                                                    good_sound.start();
-                                                                    good_count++;
-                                                                }
-                                                                else {
-                                                                    if(max_gyro_y <= 0.93) {
-                                                                        good_sound.start();
-                                                                        good_count++;
-                                                                    }
-                                                                    else {
-                                                                        bad_sound.start();
-                                                                        bad_count++;
-                                                                    }
-                                                                }
-                                                            }
-                                                        }
-                                                    }
-                                                    else {
-                                                        if(max_delta_z > 1.69) {
-                                                            good_sound.start();
-                                                            good_count++;
+                                                            bad_sound.start();
                                                             bad_count++;
                                                         }
                                                     }
                                                 }
-                                                else {
-                                                    if(avg_delta_z <= -0.002308) {
-                                                        if(max_gyro_z <= 0.07) {
+                                            }
+                                            else {
+                                                if(max_gyro_x <= 0.14) {
+                                                    if(max_delta <= 1.258) {
+                                                        if (avg_gyro_x <= 0.02104) {
                                                             bad_sound.start();
                                                             bad_count++;
                                                         }
                                                         else {
-                                                            if(avg_delta_y<= -0.000678) {
-                                                                good_sound.start();
-                                                                good_count++;
-                                                            }
-                                                            else {
-                                                                bad_sound.start();
-                                                                bad_count++;
-                                                            }
+                                                            good_sound.start();
+                                                            good_count++;
                                                         }
+                                                    }
+                                                    else {
+                                                        good_sound.start();
+                                                        good_count++;
+                                                    }
+                                                }
+                                                else {
+                                                    if(max_gyro <= 1.35) {
+                                                        good_sound.start();
+                                                        good_count++;
                                                     }
                                                     else {
                                                         bad_sound.start();
@@ -577,7 +571,6 @@ public class NewActivity extends AppCompatActivity implements SensorEventListene
                                                     }
                                                 }
                                             }
-
                                             //Rohan Jobanputra
                                             runOnUiThread(new Runnable() {
                                                 public void run() {
@@ -607,11 +600,15 @@ public class NewActivity extends AppCompatActivity implements SensorEventListene
 
                                             avg_delta_y_set.clear();
                                             avg_delta_z_set.clear();
+                                            avg_z_set = 0;
+                                            avg_gyro_x_set = 0;
 
                                             consistency = 0;
 
                                             avg_delta_y_count = 0;
                                             avg_delta_z_count = 0;
+                                            avg_z_count = 0;
+                                            avg_gyro_x_count = 0;
 
                                             max_gyro_x = 0;
                                             max_delta_z = 0;
